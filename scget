@@ -113,19 +113,29 @@ def download_image(image, refer):
         output = open(working_dir + '/' + good, 'wb')
         output.write(response.read())
         output.close()
-        print good, ' Downloaded!'
+        return good
+        
+    return False
     
-if len(args) < 4 and len(args) > 4:
+if len(args) == 4:
+    total = 0
     working_dir = create_working_dir()
     counter = 1
-    while True:
-        link = get_page(counter)
-        images = get_page_links(link)
-        for i in xrange(len(images)):
-            image = get_image(images[i])
-            if image != 'NOTHING':
-                download_image(image, images[i])
-        counter += 1
+    try:
+        while True:
+            link = get_page(counter)
+            images = get_page_links(link)
+            for i in xrange(len(images)):
+                image = get_image(images[i])
+                if image != 'NOTHING':
+                    img_name = download_image(image, images[i])
+                    if img_name:
+                        total = total + 1
+                        print img_name, 'Downloaded! - ', total, '/??'
+            counter += 1
+    except KeyboardInterrupt:
+        print '\nTotal Image Downloaded: ', total
+        print 'Enjoy!'
         
 else :
     print 'path doesn\'t exist or wrong number of arguments'
