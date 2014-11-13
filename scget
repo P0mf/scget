@@ -1,0 +1,132 @@
+#!/usr/bin/env python2
+#
+# usage : 
+# $scget [PQMRN NEW] [tags] [destination]
+# tags : this_is_a_tag,this_is_an_other_tag
+# destination : /home/folder/[tags]
+# concrete exemple:
+# python scget P K-on! ~/pictures
+# creates /home/pictures/K-on!
+
+import sys
+import os
+import urllib2
+import time
+
+import requests
+from BeautifulSoup import BeautifulSoup
+
+
+args = sys.argv
+headers = {
+    'User-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:29.0)'
+    ' Gecko/20100101 Firefox/29.0'
+}
+page = 'http://chan.sankakucomplex.com/'
+working_dir = ''
+quality = {
+    'P' : 'order%3Apopular',
+    'Q' : 'order%3Aquality',
+    'M' : 'order%3Ampixel',
+    'R' : 'order%3Arandom',
+    'N' : ''
+    }
+
+def get_tags():
+    if (args[2] == 'NEW'):
+        to_return = ''
+    else:
+        tags = args[2].split(',')
+        to_return = ''
+        for s in tags:
+            to_return += s + '+'
+    
+    return '?tags=' + to_return
+    
+def get_quality():
+    order = ''
+    try :
+        order = quality[args[1]]
+    except KeyError:
+        pass
+    return order
+
+# opens a request and returns the page if there is no errors otherwise try again
+def request(url, headers):
+    while True:
+        r = requests.get(url, headers=headers)
+        if r.status_code == 200:
+            return r.text;
+        else:
+            print 'HTTP ERROR -> ', r.status_code
+            time.sleep(10)
+    
+# creates the dumping directory and returns its name    
+def create_working_dir():
+    tags = args[2].split(',')
+    dir_name = ''
+    for s in tags:
+        dir_name += s + '|'
+    work_dir_abs = args[3] + dir_name[:-1]
+    if not os.path.exists(work_dir_abs):
+        os.makedirs(work_dir_abs)
+    return work_dir_abs
+
+# get all images(the image page) in a page and returns links to each one     
+def get_page_links(link):
+    page_links = []
+    soup = BeautifulSoup(request(link, headers))
+    for a in soup.findAll('a'):
+        if(a.get('href').find('/post/show/') != -1):
+            page_links.append(page + a.get('href'))
+    return page_links
+
+# get the page with its number
+def get_page(page_number):
+    return page + get_tags() + get_quality() + '&page=' + str(page_number)
+
+# gets the image out of a image page
+def get_image(image_page):
+    print image_page
+    soup = BeautifulSoup(request(image_page, headers))
+    try:
+        image = soup.find(id="highres").get('href')
+    except AttributeError:
+        image = 'NOTHING'
+    return image
+    
+# download the image from the url    
+def download_image(image, refer):
+    image_id = image.rsplit('?')[1]
+    format = image.split('.')[3]
+    good = image_id + '.' + format[:3]
+    
+    if not os.path.isfile(working_dir + '/' + good):
+        req = urllib2.Request('http:' + image)
+        req.add_header('Referer', refer)
+        req.add_header('Cookie', '__cfduid=d779ff63e44a27415f'
+            '6f993ca8ae7342f1399560942517')
+        req.add_header('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux' 
+                        +'x86_64; rv:29.0) Gecko/20100101 Firefox/29.0')
+        response = urllib2.urlopen(req)
+        
+        output = open(working_dir + '/' + good, 'wb')
+        output.write(response.read())
+        output.close()
+        print good, ' Downloaded!'
+    
+if len(args) < 4 and len(args) > 4:
+    working_dir = create_working_dir()
+    counter = 1
+    while True:
+        link = get_page(counter)
+        images = get_page_links(link)
+        for i in xrange(len(images)):
+            image = get_image(images[i])
+            if image != 'NOTHING':
+                download_image(image, images[i])
+        counter += 1
+        
+else :
+    print 'path doesn\'t exist or wrong number of arguments'
+    print 'SCdownloader.py [P,Q,R,M,N,NEW] [tag1,tag2,...] [path]'
