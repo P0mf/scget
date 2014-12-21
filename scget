@@ -98,8 +98,8 @@ def get_image(image_page):
 # download the image from the url    
 def download_image(image, refer):
     image_id = image.rsplit('?')[1]
-    format = image.split('.')[3]
-    good = image_id + '.' + format[:3]
+    format = image.split('.')[3].split('?')[0]
+    good = image_id + '.' + format
     
     if not os.path.isfile(working_dir + '/' + good):
         req = urllib2.Request('http:' + image)
@@ -125,6 +125,8 @@ if len(args) == 4:
         while True:
             link = get_page(counter)
             images = get_page_links(link)
+            if not images:
+                raise KeyboardInterrupt
             for i in xrange(len(images)):
                 image = get_image(images[i])
                 if image != 'NOTHING':
