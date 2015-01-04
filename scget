@@ -13,8 +13,16 @@ import os
 import urllib2
 import time
 
-import requests
-from BeautifulSoup import BeautifulSoup
+try:
+    import requests
+except:
+    print "You seem to be missing the requests module, please install it before running scget."
+    sys.exit()
+try:    
+    from BeautifulSoup import BeautifulSoup
+except:
+    print "You seem to be missing the bs4 module, please install it before running scget."
+    sys.exit()
 
 
 args = sys.argv
