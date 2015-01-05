@@ -40,6 +40,20 @@ quality = {
     'N' : ''
     }
 
+def show_help():
+    print 'Usage: scget [MODE] [tag1,tag2,...] [PATH]'
+    print 'Available modes:'
+    print '\tP\tDownloads images sorted by popularity'
+    print '\tQ\tDownloads images ordered by \'quality\''
+    print '\tM\tDownloads only images containing the high resolution tag'
+    print '\tR\tDownloads random images'
+    print 'Tags:'
+    print '\tDownloads only results matching the tags you enter, separated by commas, no spaces.'
+    print 'Path:'
+    print '\tSpecify a path where downloaded images will be saved to.'
+    print '\nReport issues: https://github.com/P0mf/scget/issues'
+    print 'Repository: https://github.com/P0mf/scget'
+
 def get_tags():
     if (args[2] == 'NEW'):
         to_return = ''
@@ -150,7 +164,9 @@ if len(args) == 4:
     except KeyboardInterrupt:
         print '\nTotal Image Downloaded: ', total
         print 'Enjoy!'
-        
-else :
+elif args[1] == "--help":
+    show_help()
+else:
     print 'path doesn\'t exist or wrong number of arguments'
-    print 'scget [P(opular), Q(uality), R(andom), M(axpixel), N, NEW] [tag1,tag2,...] [path]'
+    print 'scget [P, Q, R, M, N, NEW] [tag1, tag2,...] [path]'
+    print 'scget --help for in-depth information of arguments'
