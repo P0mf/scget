@@ -8,7 +8,7 @@ A simple Python script to download your favorite lewds off chan.sankakucomplex
 
 ``$ scget [P,Q,M,R,N] [tags,tags,...] [destination]``
 
-You can use ``NEW`` instead of a tag if you don't want a particular tag ``$ scget P NEW /my/path/``
+You can use ``ANY`` instead of a tag if you don't want a particular tag ``$ scget P ANY /my/path/``
 
 tag list:
 - P : Popular
