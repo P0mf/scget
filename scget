@@ -160,7 +160,7 @@ if len(args) == 4:
     except KeyboardInterrupt:
         print '\nTotal Image Downloaded: ', total
         print 'Enjoy!'
-elif args[1] == "--help":
+elif len(args) == 2 and args[1] == "--help":
     show_help()
 else:
     print 'path doesn\'t exist or wrong number of arguments'
