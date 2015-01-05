@@ -39,9 +39,9 @@ def show_help():
     print '\tQ\tDownloads images ordered by \'quality\'.'
     print '\tM\tDownloads only images containing the high resolution tag.'
     print '\tR\tDownloads random images.'
-    print '\tNEW\tSorts by date, newest first. Not affected by tags.'
     print 'Tags:'
     print '\tDownloads only results matching the tags you enter, separated by commas, no spaces.'
+    print '\tANY\tDownloads all the images according to selected mode.'
     print 'Path:'
     print '\tSpecify a path where downloaded images will be saved to.'
     print 'Usage examples:'
@@ -51,7 +51,7 @@ def show_help():
     print 'Repository: https://github.com/P0mf/scget'
 
 def get_tags():
-    if (args[2] == 'NEW'):
+    if (args[2] == 'ANY'):
         to_return = ''
     else:
         tags = args[2].split(',')
