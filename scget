@@ -47,6 +47,7 @@ def show_help():
     print '\tQ\tDownloads images ordered by \'quality\''
     print '\tM\tDownloads only images containing the high resolution tag'
     print '\tR\tDownloads random images'
+    print '\tNEW\tSorts by date, newest first.
     print 'Tags:'
     print '\tDownloads only results matching the tags you enter, separated by commas, no spaces.'
     print 'Path:'
