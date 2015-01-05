@@ -1,12 +1,4 @@
 #!/usr/bin/env python2
-#
-# usage : 
-# $scget [PQMRN NEW] [tags] [destination]
-# tags : this_is_a_tag,this_is_an_other_tag
-# destination : /home/folder/[tags]
-# concrete exemple:
-# python scget P K-on! ~/pictures
-# creates /home/pictures/K-on!
 
 import sys
 import os
@@ -43,15 +35,18 @@ quality = {
 def show_help():
     print 'Usage: scget [MODE] [tag1,tag2,...] [PATH]'
     print 'Available modes:'
-    print '\tP\tDownloads images sorted by popularity'
-    print '\tQ\tDownloads images ordered by \'quality\''
-    print '\tM\tDownloads only images containing the high resolution tag'
-    print '\tR\tDownloads random images'
-    print '\tNEW\tSorts by date, newest first. Not affected by tags'
+    print '\tP\tDownloads images sorted by popularity.'
+    print '\tQ\tDownloads images ordered by \'quality\'.'
+    print '\tM\tDownloads only images containing the high resolution tag.'
+    print '\tR\tDownloads random images.'
+    print '\tNEW\tSorts by date, newest first. Not affected by tags.'
     print 'Tags:'
     print '\tDownloads only results matching the tags you enter, separated by commas, no spaces.'
     print 'Path:'
     print '\tSpecify a path where downloaded images will be saved to.'
+    print 'Usage examples:'
+    print '\tscget P K-on! ~/pictures'
+    print '\tDownloads the most popular K-On! tagged pictures to ~/pictures/K-On!'
     print '\nReport issues: https://github.com/P0mf/scget/issues'
     print 'Repository: https://github.com/P0mf/scget'
 
