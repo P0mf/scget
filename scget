@@ -153,4 +153,4 @@ if len(args) == 4:
         
 else :
     print 'path doesn\'t exist or wrong number of arguments'
-    print 'scget [P,Q,R,M,N,NEW] [tag1,tag2,...] [path]'
+    print 'scget [P(opular), Q(uality), R(andom), M(axpixel), N, NEW] [tag1,tag2,...] [path]'
