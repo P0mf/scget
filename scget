@@ -95,6 +95,16 @@ def create_working_dir():
         os.makedirs(work_dir_abs)
     return work_dir_abs
 
+# get the total number of images for the tag combination
+def get_total(link):
+    total_images = ""
+    soup = BeautifulSoup(request(link, headers))
+    for a in soup.findAll("span"):
+        if a.get("title") and "Post Count:" in a.get("title"):
+            total_images = a.get("title").split(" ")[2]
+
+    return total_images
+
 # get all images(the image page) in a page and returns links to each one     
 def get_page_links(link):
     page_links = []
@@ -141,9 +151,10 @@ def download_image(image, refer):
     return False
     
 if len(args) == 4:
-    total = 0
+    downloaded = 0
     working_dir = create_working_dir()
     counter = 1
+    total = get_total(get_page(1))
     try:
         while True:
             link = get_page(counter)
@@ -155,11 +166,11 @@ if len(args) == 4:
                 if image != 'NOTHING':
                     img_name = download_image(image, images[i])
                     if img_name:
-                        total = total + 1
-                        print img_name, 'Downloaded! - ', total, '/??'
+                        downloaded = downloaded + 1
+                        print img_name, 'Downloaded! - ', downloaded, '/', total
             counter += 1
     except KeyboardInterrupt:
-        print '\nTotal Image Downloaded: ', total
+        print '\nTotal Image Downloaded: ', downloaded, '/', total
         print 'Enjoy!'
 elif len(args) == 2 and args[1] == "--help":
     show_help()
