@@ -13,7 +13,7 @@ except:
 try:    
     from BeautifulSoup import BeautifulSoup
 except:
-    print "You seem to be missing the bs4 module, please install it before running scget."
+    print "You seem to be missing the BeautifulSoup4 module, please install it before running scget."
     sys.exit()
 
 
@@ -110,7 +110,7 @@ def get_page_links(link):
     page_links = []
     soup = BeautifulSoup(request(link, headers))
     for a in soup.findAll('a'):
-        if(a.get('href').find('/post/show/') != -1):
+        if(a.get('href').find('post/show/') != -1):
             page_links.append(page + a.get('href'))
     return page_links
 
