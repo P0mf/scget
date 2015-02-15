@@ -133,19 +133,20 @@ def chunk_report(bytes_so_far, chunk_size, total_size):
     percent = float(bytes_so_far) / total_size
     percent = round(percent*100, 2)
     progress = "["
-    for i in xrange(int(percent)):
-        if i % 2 == 0:
-            progress = progress + "="
+    toggle = True
     
-    progress = progress + ">"
-    for i in xrange(int(99 - percent)):
+    for i in xrange(100):
         if i % 2 == 0:
-            progress = progress + "."
-    
+            if i < percent:
+                progress = progress + "="
+            else:
+                if toggle:
+                    progress = progress + ">"
+                    toggle = False
+                progress = progress + "."
+                
     progress = progress + "]"
-    sys.stdout.write("[%0.2f%%] %s  \r" % 
-        (percent, progress))
-
+    sys.stdout.write("[%0.2f%%] %s  \r" % (percent, progress))
     if bytes_so_far >= total_size:
         sys.stdout.write('\n')
 
@@ -153,6 +154,7 @@ def chunk_write(response, output,chunk_size=8192, report_hook=None):
     total_size = response.info().getheader('Content-Length').strip()
     total_size = int(total_size)
     bytes_so_far = 0
+    
     while 1:
         chunk = response.read(chunk_size)
         output.write(chunk)
