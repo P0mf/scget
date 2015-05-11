@@ -8,12 +8,14 @@ import time
 try:
     import requests
 except:
-    print "You seem to be missing the requests module, please install it before running scget."
+    print "You seem to be missing the requests module, please install it before\
+        running scget."
     sys.exit()
-try:    
+try:
     from BeautifulSoup import BeautifulSoup
 except:
-    print "You seem to be missing the BeautifulSoup4 module, please install it before running scget."
+    print "You seem to be missing the BeautifulSoup4 module, please install it\
+        before running scget."
     sys.exit()
 
 
@@ -25,31 +27,35 @@ headers = {
 page = 'http://chan.sankakucomplex.com/'
 working_dir = ''
 quality = {
-    'P' : 'order%3Apopular',
-    'Q' : 'order%3Aquality',
-    'M' : 'order%3Ampixel',
-    'R' : 'order%3Arandom',
-    'N' : ''
+    'P': 'order%3Apopular',
+    'Q': 'order%3Aquality',
+    'M': 'order%3Ampixel',
+    'R': 'order%3Arandom',
+    'N': ''
     }
 
+
 def show_help():
-    print 'Usage: scget [MODE] [tag1,tag2,...] [PATH]'
-    print 'Available modes:'
-    print '\tP\tDownloads images ordered by popularity.'
-    print '\tQ\tDownloads images ordered by \"quality\".'
-    print '\tM\tDownloads images ordered by resolution.'
-    print '\tP\tDownloads images ordered by date added.'
-    print '\tR\tDownloads images in a random order.'
-    print 'Tags:'
-    print '\tDownloads only results matching the tags you enter, separated by commas, no spaces.'
-    print '\tANY\tDownloads all the images according to selected mode.'
-    print 'Path:'
-    print '\tSpecify a path where downloaded images will be saved to.'
-    print 'Usage examples:'
-    print '\tscget P K-on! ~/pictures'
-    print '\tDownloads K-On! tagged pictures ordered by popularity to ~/pictures/K-On!'
-    print '\nReport issues: https://github.com/P0mf/scget/issues'
-    print 'Repository: https://github.com/P0mf/scget'
+    print """Usage: scget [MODE] [tag1,tag2,...] [PATH]
+      Available modes:
+      \tP\tDownloads images ordered by popularity.
+      \tQ\tDownloads images ordered by \"quality\".
+      \tM\tDownloads images ordered by resolution.
+      \tP\tDownloads images ordered by date added.
+      \tR\tDownloads images in a random order.
+      Tags:
+      \tDownloads only results matching the tags you enter, separated by \
+commas, no spaces.
+      \tANY\tDownloads all the images according to selected mode.
+      Path:
+      \tSpecify a path where downloaded images will be saved to.
+      Usage examples:
+      \tscget P K-on! ~/pictures
+      \tDownloads K-On! tagged pictures ordered by popularity to \
+~/pictures/K-On!
+      \nReport issues: https://github.com/P0mf/scget/issues
+      Repository: https://github.com/P0mf/scget"""
+
 
 def get_tags():
     if (args[2] == 'ANY'):
@@ -59,28 +65,31 @@ def get_tags():
         to_return = ''
         for s in tags:
             to_return += s + '+'
-    
+
     return '?tags=' + to_return
-    
+
+
 def get_quality():
     order = ''
-    try :
+    try:
         order = quality[args[1]]
     except KeyError:
         pass
     return order
 
-# opens a request and returns the page if there is no errors otherwise try again
+
+# open a request and return the page if there is no errors otherwise try again
 def request(url, headers):
     while True:
         r = requests.get(url, headers=headers)
         if r.status_code == 200:
-            return r.text;
+            return r.text
         else:
             print 'HTTP ERROR -> ', r.status_code
             time.sleep(10)
-    
-# creates the dumping directory and returns its name    
+
+
+# creates the dumping directory and returns its name
 def create_working_dir():
     tags = args[2].split(',')
     dir_name = ''
@@ -95,6 +104,7 @@ def create_working_dir():
         os.makedirs(work_dir_abs)
     return work_dir_abs
 
+
 # get the total number of images for the tag combination
 def get_total(link):
     total_images = ""
@@ -105,7 +115,8 @@ def get_total(link):
 
     return total_images
 
-# get all images(the image page) in a page and returns links to each one     
+
+# get all images(the image page) in a page and returns links to each one
 def get_page_links(link):
     page_links = []
     soup = BeautifulSoup(request(link, headers))
@@ -114,9 +125,11 @@ def get_page_links(link):
             page_links.append(page + a.get('href'))
     return page_links
 
+
 # get the page with its number
 def get_page(page_number):
     return page + get_tags() + get_quality() + '&page=' + str(page_number)
+
 
 # gets the image out of a image page
 def get_image(image_page):
@@ -127,14 +140,14 @@ def get_image(image_page):
     except AttributeError:
         image = 'NOTHING'
     return image
-    
-    
+
+
 def chunk_report(bytes_so_far, chunk_size, total_size):
     percent = float(bytes_so_far) / total_size
     percent = round(percent*100, 2)
     progress = "["
     toggle = True
-    
+
     for i in xrange(100):
         if i % 2 == 0:
             if i < percent:
@@ -144,17 +157,18 @@ def chunk_report(bytes_so_far, chunk_size, total_size):
                     progress = progress + ">"
                     toggle = False
                 progress = progress + "."
-                
+
     progress = progress + "]"
     sys.stdout.write("[%0.2f%%] %s  \r" % (percent, progress))
     if bytes_so_far >= total_size:
         sys.stdout.write('\n')
 
-def chunk_write(response, output,chunk_size=8192, report_hook=None):
+
+def chunk_write(response, output, chunk_size=8192, report_hook=None):
     total_size = response.info().getheader('Content-Length').strip()
     total_size = int(total_size)
     bytes_so_far = 0
-    
+
     while 1:
         chunk = response.read(chunk_size)
         output.write(chunk)
@@ -165,28 +179,29 @@ def chunk_write(response, output,chunk_size=8192, report_hook=None):
         if report_hook:
             report_hook(bytes_so_far, chunk_size, total_size)
     return bytes_so_far
-    
-# download the image from the url    
+
+
+# download the image from the url
 def download_image(image, refer):
     image_id = image.rsplit('?')[1]
     format = image.split('.')[3].split('?')[0]
     good = image_id + '.' + format
-    
+
     if not os.path.isfile(working_dir + '/' + good):
         req = urllib2.Request('http:' + image)
         req.add_header('Referer', refer)
-        req.add_header('Cookie', '__cfduid=d779ff63e44a27415f'
-            '6f993ca8ae7342f1399560942517')
-        req.add_header('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux' 
-                        +'x86_64; rv:29.0) Gecko/20100101 Firefox/29.0')
+        req.add_header('Cookie', '__cfduid=d779ff63e44a27415f\
+          6f993ca8ae7342f1399560942517')
+        req.add_header('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux\
+          x86_64; rv:29.0) Gecko/20100101 Firefox/29.0')
         response = urllib2.urlopen(req)
         output = open(working_dir + '/' + good, 'wb')
-        chunk_write(response, output,report_hook=chunk_report)
+        chunk_write(response, output, report_hook=chunk_report)
         output.close()
         return good
-        
+
     return False
-    
+
 if len(args) == 4:
     downloaded = 0
     working_dir = create_working_dir()
@@ -204,7 +219,8 @@ if len(args) == 4:
                     img_name = download_image(image, images[i])
                     if img_name:
                         downloaded = downloaded + 1
-                        print img_name, 'Downloaded! - ', downloaded, '/', total
+                        print img_name, 'Downloaded! - ', downloaded, '/',
+                        total
             counter += 1
     except KeyboardInterrupt:
         print '\nTotal Image Downloaded: ', downloaded, '/', total
